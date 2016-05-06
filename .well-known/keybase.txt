@@ -1,0 +1,75 @@
+==================================================================
+https://keybase.io/muel
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://lehman.space
+  * I am muel (https://keybase.io/muel) on keybase.
+  * I have a public key with fingerprint 42FA 498C 4DC1 B227 80A1  D3B1 C41E FC86 4169 82B5
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "01016993215a471721ac2841c3e2542472867a0b78e76eeb3b7c53edf38c9919f4d60a",
+            "fingerprint": "42fa498c4dc1b22780a1d3b1c41efc86416982b5",
+            "host": "keybase.io",
+            "key_id": "c41efc86416982b5",
+            "kid": "01016993215a471721ac2841c3e2542472867a0b78e76eeb3b7c53edf38c9919f4d60a",
+            "uid": "829975a4fc80b79a18213dc96b48a200",
+            "username": "muel"
+        },
+        "revoke": {
+            "sig_ids": [
+                "a717692454914566bd3e198083aaa4554b4d7580e533c9841b2b3d57a3c469810f"
+            ]
+        },
+        "service": {
+            "hostname": "lehman.space",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1462553916,
+    "expire_in": 157680000,
+    "prev": "99482b0ab4d2764c74cf0c56067f789eaff82e8fbecb5ba64e46048878a12890",
+    "seqno": 44,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.0.53
+Comment: https://keybase.io/crypto
+
+yMJxAnicrZJPbBVFHMdfoa+WR5pQDME2qHEaAeOj2ZmdnT+LBlH0UBMUopZEzcvM
+7Gy7tH373N2+0jQl6EnRHjw0MfZQOZQ/ig1/HjEcCIXAgbRGvKiRUIjppZR/FqHG
+8oyzDd48OpfJzHx/n+93fjMXGpZncjXldU8c/WPzYm3N5Lk7vZn2/PcvDAAZev3A
+HQBdemnS3Z6Ok0JX4AEXWNCChHMbQUdgCimCQiGGobI1cjDCFDFChSUp05RoLW1J
+lWNrz7eZ4hxyH3vEEiAP/KDYoaNSFBQTg8XIF5gzhT0FJUKUWQJ6toQKQ+0rRrAx
+ZUg6prAzjNMKE06KWLcGodkzi8JSvP/Q/8+5e5dwDHFODcl4mRouIEPQ9hQnEjOB
+LCsVxjoqih5t1D29uhsM5kGky2GXTnsaBx0mcAzcd4EwaQhH2MEcYocQ6dkacmYx
+WwiBHQdL7FGHWdqxbcVNZImk7TlU2AqbS0LLB+8btnErB2oJnnbokXO37uwRxda4
+JMxRHpSiMAlV2G1OOpOk5Kahkv5SquzTsvCIUZBB0TPPYwrKOoqDsAhcaJQqCVIo
+xAQ5js0hyQO9pxREuhCkCocSZpmR2uiyQXKOzRtYwlwAUYIVxcq3lEMsQn3KuBa+
+z5BmvtRKOlIQrDGxMGOUCYgYT5sY6w+KIXAxNjlFh2GaxhVF0htpMHh+4r3aTE0u
+U5ddlv7bTG7Fqn9/88zxx6qrXj46fu7+2r3fNOVapr9rHn8rWPyksbXx7IPGYKwB
+ZfdvGro8vHL1w+TgxJuLw0Nf1NWPvD67u33v8xvD+hfLbYdnF0Zmx789/evbrzz5
+49/rdxw7sOJiderGRwNjF2buXNk388N5vG2wuilX27Zt/0n347GL2yf2NN2qTmXJ
+/O/9z8DRudOvtZY3VyuMlSvXvzzVJxeuV35u79t1YBluHn225eH054/fnHxu7tSR
+Q1v/3LnlxHTTJBmqvPFZw1d3rVv8dttPI7vP3PvLzX5aeWffujVX88M3n966/vDK
+y7+tHX/q2o5XD7XdG8w3Hx89spCtuzT39XxLQzQ2euMl9+C8Wz+18Zc12z/csOUf
+aQFX2g==
+=d3/d
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/muel
+
+==================================================================
