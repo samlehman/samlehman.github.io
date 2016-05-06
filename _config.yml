@@ -20,3 +20,6 @@ facebook_username: lehman
 
 # Build settings
 markdown: kramdown
+
+
+include: [".well-known"]
