@@ -21,4 +21,4 @@ facebook_username:    lehman  # Replace this with your Facebook username
 # Build settings
 markdown: kramdown
 
-
+include: [".well-known"]
