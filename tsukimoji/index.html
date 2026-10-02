@@ -108,15 +108,8 @@
       gap: 16px;
       margin-bottom: 20px;
     }
-    header img { width: 88px; height: 88px; flex: none; }
-    header h1 {
-      margin: 0;
-      font-size: clamp(34px, 8vw, 52px);
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      line-height: 1;
-    }
-    header h1 span { color: var(--green); }
+    header h1 { margin: 0; line-height: 0; }
+    header h1 img { display: block; width: min(100%, 560px); height: auto; }
     header p { margin: 4px 0 0; color: var(--muted); }
     header .unit {
       margin-left: auto;
@@ -263,7 +256,6 @@
       .readout, .install { grid-template-columns: minmax(0, 1fr); }
       .cycle { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       header p { font-size: 16px; }
-      header img { width: 64px; height: 64px; }
       header .unit, .chest .tag { display: none; }
     }
   </style>
@@ -271,10 +263,9 @@
 <body>
   <div class="wrap">
     <header>
-      <img src="logo.svg" alt="Tsukimoji logo">
       <div style="min-width:0">
-        <h1>TSUKI<span>MOJI</span></h1>
-        <p>月 <em>tsuki</em> “moon” + <em>moji</em>. Moon phase emoji for any date.</p>
+        <h1><img src="logo.svg" alt="tsukiMOJi: moon phase emoji for any date" width="1280" height="400"></h1>
+        <p>月 <em>tsuki</em> “moon” + <em>moji</em>, for JavaScript, Python and Ruby.</p>
       </div>
       <div class="unit">TSK-001</div>
     </header>
