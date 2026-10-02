@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tsukimoji</title>
+  <title>tsukiMOJi</title>
   <meta name="description" content="Moon phase emoji for any date. A tiny library for JavaScript, Python and Ruby.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" href="favicon.ico" sizes="any">
@@ -252,6 +252,17 @@
       display: flex; flex-wrap: wrap; gap: 6px 20px; justify-content: space-between;
     }
 
+    .made {
+      margin-top: 28px; color: var(--muted); font-size: 16px;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 20px;
+    }
+    /* The badge PNG has a white background: blend it away on light, invert it on dark. */
+    .made img { display: block; width: 88px; height: auto; mix-blend-mode: multiply; }
+    .made p { margin: 0; }
+    @media (prefers-color-scheme: dark) {
+      .made img { filter: invert(1); mix-blend-mode: screen; }
+    }
+
     @media (max-width: 760px) {
       .readout, .install { grid-template-columns: minmax(0, 1fr); }
       .cycle { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -265,10 +276,7 @@
     <header>
       <div style="min-width:0;flex:1">
         <h1>
-          <picture>
-            <source srcset="logo-dark.png" media="(prefers-color-scheme: dark)">
-            <img src="logo.png" alt="tsukiMOJi: moon phase emoji for any date" width="1280" height="400">
-          </picture>
+          <img src="logo.png" alt="tsukiMOJi: moon phase emoji for any date" width="1280" height="400">
         </h1>
         <p>月 <em>tsuki</em> “moon” + <em>moji</em>, for JavaScript, Python and Ruby.</p>
       </div>
@@ -349,6 +357,11 @@ Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
       <span>Mean synodic month (29.530588853 days) from the new moon of 2000-01-06 18:14 UTC. Northern Hemisphere view.</span>
       <span><a href="https://github.com/samlehman/tsukimoji">github.com/samlehman/tsukimoji</a> · MIT</span>
     </footer>
+
+    <div class="made">
+      <img src="made-in-baltimore.png" alt="Made in Baltimore" width="172" height="172">
+      <p>☕ <a href="https://paypal.me/samlehman">Buy me a coffee</a> · <a href="https://paypal.me/samlehman" lang="ja">こーひーをおごって</a></p>
+    </div>
   </div>
 
   <script src="../moon-phase.js"></script>
@@ -405,7 +418,7 @@ Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
       $("next-new").textContent = shortDate(new Date(current.getTime() + toNew * SYNODIC_DAYS * DAY_MS));
 
       input.value = toLocalInput(current);
-      document.title = phase.emoji + " Tsukimoji · " + phase.name;
+      document.title = phase.emoji + " tsukiMOJi · " + phase.name;
     }
 
     input.addEventListener("change", () => {
