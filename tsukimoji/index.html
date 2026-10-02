@@ -263,8 +263,13 @@
 <body>
   <div class="wrap">
     <header>
-      <div style="min-width:0">
-        <h1><img src="logo.svg" alt="tsukiMOJi: moon phase emoji for any date" width="1280" height="400"></h1>
+      <div style="min-width:0;flex:1">
+        <h1>
+          <picture>
+            <source srcset="logo-dark.png" media="(prefers-color-scheme: dark)">
+            <img src="logo.png" alt="tsukiMOJi: moon phase emoji for any date" width="1280" height="400">
+          </picture>
+        </h1>
         <p>月 <em>tsuki</em> “moon” + <em>moji</em>, for JavaScript, Python and Ruby.</p>
       </div>
       <div class="unit">TSK-001</div>
