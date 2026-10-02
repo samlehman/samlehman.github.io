@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Moon phase</title>
+  <link rel="icon" href="tsukimoji/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="tsukimoji/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="tsukimoji/apple-touch-icon.png">
   <style>
     :root {
       color-scheme: dark;
@@ -28,6 +31,12 @@
       text-align: center;
       padding: 2rem 1.25rem 3rem;
       max-width: 28rem;
+    }
+    .logo {
+      display: block;
+      width: min(22rem, 85vw);
+      height: auto;
+      margin: 0 auto 2rem;
     }
     .emoji {
       font-size: clamp(7rem, 28vw, 11rem);
@@ -85,6 +94,7 @@
 </head>
 <body>
   <main>
+    <img class="logo" src="tsukimoji/logo-dark.png" alt="tsukimoji — moon phase emoji for any date" width="1280" height="400">
     <p class="emoji" id="emoji" aria-hidden="true">🌑</p>
     <h1 id="name">Moon</h1>
     <p class="meta" id="lit"></p>
