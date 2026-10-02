@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tsukimoji</title>
+  <meta name="description" content="Moon phase emoji for any date. A tiny library for JavaScript, Python and Ruby.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #dfe4e8;
+      --grid: rgba(38, 45, 51, 0.06);
+      --armour: #ffffff;
+      --armour-2: #e7ebee;
+      --panel-line: #c3cbd1;
+      --edge: #262d33;
+      --chest: #1c2227;
+      --chest-2: #262d33;
+      --ink: #1c2227;
+      --muted: #5b6770;
+      --on-chest: #f4f6f7;
+      --on-chest-muted: #8f9ba4;
+      --green: #16a34a;
+      --green-hi: #2fd277;
+      --green-lo: #0b5a2b;
+      --cut: 18px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --bg: #0e1215;
+        --grid: rgba(47, 210, 119, 0.05);
+        --armour: #1f262b;
+        --armour-2: #182024;
+        --panel-line: #33404a;
+        --edge: #0a0d0f;
+        --chest: #12171a;
+        --chest-2: #1a2126;
+        --ink: #eef2f4;
+        --muted: #93a0a9;
+        --green: #22c55e;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+      color: var(--ink);
+      font-family: "Rajdhani", ui-sans-serif, system-ui, sans-serif;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+    a { color: var(--green); }
+    code, pre, .mono { font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; }
+
+    .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
+
+    /* Armour plate: gunmetal edge wrapped round a clipped white panel. */
+    .plate {
+      --c: var(--cut);
+      clip-path: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)),
+                         calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
+      background: var(--edge);
+      padding: 2px;
+    }
+    .plate > .in {
+      clip-path: inherit;
+      background: linear-gradient(160deg, var(--armour) 0%, var(--armour) 55%, var(--armour-2) 100%);
+      padding: 20px;
+      height: 100%;
+      position: relative;
+    }
+    .plate > .in::before {
+      /* green trim line along the top */
+      content: "";
+      position: absolute;
+      left: calc(var(--c) + 8px); right: calc(var(--c) + 8px); top: 6px;
+      height: 3px;
+      background: var(--green);
+    }
+    .label {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 10px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    header img { width: 88px; height: 88px; flex: none; }
+    header h1 {
+      margin: 0;
+      font-size: clamp(34px, 8vw, 52px);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+    header h1 span { color: var(--green); }
+    header p { margin: 4px 0 0; color: var(--muted); }
+    header .unit {
+      margin-left: auto;
+      align-self: flex-start;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      color: var(--on-chest);
+      background: var(--chest);
+      border-left: 4px solid var(--green);
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+
+    /* Main readout */
+    .readout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; }
+    .readout > *, .install > * { min-width: 0; }
+    .chest {
+      --c: 28px;
+      clip-path: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)),
+                         calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
+      background: linear-gradient(180deg, var(--chest-2), var(--chest));
+      color: var(--on-chest);
+      padding: 28px 20px 24px;
+      text-align: center;
+      position: relative;
+    }
+    .chest::before {
+      /* V-fin crest */
+      content: "";
+      position: absolute;
+      top: 0; left: 50%;
+      width: 140px; height: 26px;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--green-hi), var(--green));
+      clip-path: polygon(0 0, 18% 0, 50% 70%, 82% 0, 100% 0, 50% 100%);
+    }
+    .chest .tag {
+      position: absolute; right: 30px; bottom: 12px;
+      font-family: "JetBrains Mono", monospace; font-size: 10px;
+      color: var(--on-chest-muted); letter-spacing: 0.12em;
+    }
+    .big-emoji {
+      font-size: clamp(96px, 24vw, 150px);
+      line-height: 1;
+      margin: 18px 0 8px;
+      filter: drop-shadow(0 0 28px rgba(47, 210, 119, 0.35));
+    }
+    .phase-name {
+      font-size: clamp(26px, 6vw, 36px);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin: 0;
+      color: #fff;
+      text-shadow: 2px 2px 0 var(--green-lo);
+    }
+    .phase-jp { margin: 2px 0 0; color: var(--green-hi); font-size: 18px; letter-spacing: 0.2em; }
+
+    .stats { display: grid; gap: 14px; }
+    .stat .value {
+      font-size: 34px; font-weight: 700; line-height: 1;
+    }
+    .stat .value small { font-size: 18px; color: var(--muted); font-weight: 600; margin-left: 4px; }
+    .gauge { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; margin-top: 10px; }
+    .gauge i {
+      height: 14px;
+      background: var(--panel-line);
+      transform: skewX(-20deg);
+    }
+    .gauge i.on { background: linear-gradient(180deg, var(--green-hi), var(--green)); }
+    .next { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .next .value { font-size: 22px; }
+
+    /* Controls */
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 16px; }
+    .controls input {
+      font: inherit;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 15px;
+      color: var(--ink);
+      background: var(--armour);
+      border: 2px solid var(--edge);
+      padding: 8px 10px;
+      min-width: 0;
+      flex: 1 1 220px;
+    }
+    .controls input:focus { outline: 3px solid var(--green-hi); outline-offset: 1px; }
+    button {
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 15px;
+      color: var(--on-chest);
+      background: var(--chest-2);
+      border: 0;
+      padding: 10px 16px;
+      cursor: pointer;
+      clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    }
+    button:hover { background: var(--green-lo); }
+    button.primary { background: var(--green); color: #fff; }
+    button.primary:hover { background: var(--green-lo); }
+    button:focus-visible { outline: 3px solid var(--green-hi); outline-offset: 2px; }
+
+    /* Phase ring */
+    section { margin-top: 16px; }
+    .cycle { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; }
+    .cycle div {
+      text-align: center;
+      padding: 10px 2px 8px;
+      background: var(--armour-2);
+      border-bottom: 3px solid var(--panel-line);
+    }
+    .cycle .e { font-size: 30px; line-height: 1.1; }
+    .cycle .n { font-size: 12px; line-height: 1.15; color: var(--muted); margin-top: 4px; font-weight: 600; }
+    .cycle div.on { background: var(--chest); border-bottom-color: var(--green-hi); }
+    .cycle div.on .n { color: var(--green-hi); }
+
+    /* Install */
+    .install { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .install h3 { margin: 0 0 8px; font-size: 20px; letter-spacing: 0.06em; text-transform: uppercase; }
+    pre {
+      margin: 0;
+      background: var(--chest);
+      color: var(--on-chest);
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.55;
+      overflow-x: auto;
+      border-left: 4px solid var(--green);
+    }
+    pre .c { color: var(--on-chest-muted); }
+    pre .g { color: var(--green-hi); }
+
+    footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 15px;
+      display: flex; flex-wrap: wrap; gap: 6px 20px; justify-content: space-between;
+    }
+
+    @media (max-width: 760px) {
+      .readout, .install { grid-template-columns: minmax(0, 1fr); }
+      .cycle { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      header p { font-size: 16px; }
+      header img { width: 64px; height: 64px; }
+      header .unit, .chest .tag { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="logo.svg" alt="Tsukimoji logo">
+      <div style="min-width:0">
+        <h1>TSUKI<span>MOJI</span></h1>
+        <p>月 <em>tsuki</em> “moon” + <em>moji</em>. Moon phase emoji for any date.</p>
+      </div>
+      <div class="unit">TSK-001</div>
+    </header>
+
+    <div class="readout">
+      <div class="chest" aria-live="polite">
+        <div class="big-emoji" id="emoji" aria-hidden="true">🌑</div>
+        <p class="phase-name" id="name">New Moon</p>
+        <p class="phase-jp" id="jp">新月</p>
+        <div class="tag">MOON PHASE MONITOR</div>
+      </div>
+
+      <div class="plate"><div class="in stats">
+        <div class="stat">
+          <p class="label">Illumination</p>
+          <div class="value" id="lit">0<small>%</small></div>
+          <div class="gauge" id="gauge" aria-hidden="true"></div>
+        </div>
+        <div class="stat">
+          <p class="label">Lunar age</p>
+          <div class="value" id="age">0.0<small>/ 29.53 days</small></div>
+        </div>
+        <div class="next">
+          <div class="stat">
+            <p class="label">Next 🌕 full</p>
+            <div class="value" id="next-full">—</div>
+          </div>
+          <div class="stat">
+            <p class="label">Next 🌑 new</p>
+            <div class="value" id="next-new">—</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="controls">
+      <label class="label" for="when" style="margin:0">Target date</label>
+      <input type="datetime-local" id="when">
+      <button type="button" id="prev" aria-label="One day earlier">−1 day</button>
+      <button type="button" id="next" aria-label="One day later">+1 day</button>
+      <button type="button" class="primary" id="now">Now</button>
+    </div>
+
+    <section class="plate"><div class="in">
+      <p class="label">Phase cycle</p>
+      <div class="cycle" id="cycle"></div>
+    </div></section>
+
+    <section>
+      <div class="install">
+        <div class="plate"><div class="in">
+          <h3>JavaScript</h3>
+          <pre><span class="c">$</span> npm install tsukimoji
+
+<span class="g">import</span> { emoji } <span class="g">from</span> "tsukimoji";
+emoji(); <span class="c">// "🌔"</span></pre>
+        </div></div>
+        <div class="plate"><div class="in">
+          <h3>Python</h3>
+          <pre><span class="c">$</span> pip install tsukimoji
+
+<span class="g">from</span> tsukimoji <span class="g">import</span> emoji
+emoji()  <span class="c"># "🌔"</span></pre>
+        </div></div>
+        <div class="plate"><div class="in">
+          <h3>Ruby</h3>
+          <pre><span class="c">$</span> gem install tsukimoji
+
+<span class="g">require</span> "tsukimoji"
+Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
+        </div></div>
+      </div>
+    </section>
+
+    <footer>
+      <span>Mean synodic month (29.530588853 days) from the new moon of 2000-01-06 18:14 UTC. Northern Hemisphere view.</span>
+      <span><a href="https://github.com/samlehman/tsukimoji">github.com/samlehman/tsukimoji</a> · MIT</span>
+    </footer>
+  </div>
+
+  <script src="../moon-phase.js"></script>
+  <script>
+    const DAY_MS = 86400000;
+    const SYNODIC_DAYS = 29.530588853;
+    const JP = ["新月", "三日月", "上弦の月", "十三夜月", "満月", "寝待月", "下弦の月", "有明月"];
+
+    const $ = (id) => document.getElementById(id);
+    const input = $("when");
+    let current = new Date();
+
+    // Build the static pieces once.
+    const gauge = $("gauge");
+    for (let i = 0; i < 20; i++) gauge.appendChild(document.createElement("i"));
+    const cycle = $("cycle");
+    PHASES.forEach((p) => {
+      const cell = document.createElement("div");
+      cell.innerHTML = '<div class="e"></div><div class="n"></div>';
+      cell.querySelector(".e").textContent = p.emoji;
+      cell.querySelector(".n").textContent = p.name;
+      cycle.appendChild(cell);
+    });
+
+    function toLocalInput(d) {
+      const pad = (n) => String(n).padStart(2, "0");
+      return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
+        "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
+    }
+
+    function shortDate(d) {
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function render() {
+      const phase = getMoonPhase(current);
+      const index = PHASES.findIndex((p) => p.name === phase.name);
+      const pct = Math.round(phase.illumination * 100);
+
+      $("emoji").textContent = phase.emoji;
+      $("name").textContent = phase.name;
+      $("jp").textContent = JP[index];
+      $("lit").innerHTML = pct + "<small>%</small>";
+      $("age").innerHTML = (phase.age * SYNODIC_DAYS).toFixed(1) + "<small>/ 29.53 days</small>";
+
+      const lit = Math.round(phase.illumination * 20);
+      [...gauge.children].forEach((bar, i) => bar.classList.toggle("on", i < lit));
+      [...cycle.children].forEach((cell, i) => cell.classList.toggle("on", i === index));
+
+      // Fractions of a cycle until the next full (0.5) and new (0 / 1) moon.
+      const toFull = ((0.5 - phase.age) % 1 + 1) % 1 || 1;
+      const toNew = (1 - phase.age) % 1 || 1;
+      $("next-full").textContent = shortDate(new Date(current.getTime() + toFull * SYNODIC_DAYS * DAY_MS));
+      $("next-new").textContent = shortDate(new Date(current.getTime() + toNew * SYNODIC_DAYS * DAY_MS));
+
+      input.value = toLocalInput(current);
+      document.title = phase.emoji + " Tsukimoji · " + phase.name;
+    }
+
+    input.addEventListener("change", () => {
+      const d = new Date(input.value);
+      if (!Number.isNaN(d.getTime())) { current = d; render(); }
+    });
+    $("prev").addEventListener("click", () => { current = new Date(current.getTime() - DAY_MS); render(); });
+    $("next").addEventListener("click", () => { current = new Date(current.getTime() + DAY_MS); render(); });
+    $("now").addEventListener("click", () => { current = new Date(); render(); });
+
+    render();
+  </script>
+</body>
+</html>

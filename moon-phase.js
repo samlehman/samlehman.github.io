@@ -54,7 +54,8 @@ function format(date = new Date()) {
   return `${phase.emoji}  ${phase.name}  (~${pct}% lit)\n${when}`;
 }
 
-if (require.main === module) {
+// Run as a CLI under Node; skipped when loaded with <script> in a browser.
+if (typeof require !== "undefined" && require.main === module) {
   const arg = process.argv[2];
   const date = arg ? new Date(arg) : new Date();
   if (Number.isNaN(date.getTime())) {
@@ -64,4 +65,6 @@ if (require.main === module) {
   console.log(format(date));
 }
 
-module.exports = { getMoonPhase, format, PHASES };
+if (typeof module !== "undefined") {
+  module.exports = { getMoonPhase, format, PHASES };
+}
