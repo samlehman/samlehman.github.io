@@ -182,6 +182,9 @@
     .gauge i.on { background: linear-gradient(180deg, var(--green-hi), var(--green)); }
     .next { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .next .value { font-size: 22px; }
+    .method { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .method .stat { background: var(--armour-2); border-bottom: 3px solid var(--panel-line); padding: 10px 12px; }
+    .method .value { font-size: 22px; overflow-wrap: anywhere; }
 
     /* Controls */
     .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 16px; }
@@ -264,7 +267,7 @@
     }
 
     @media (max-width: 760px) {
-      .readout, .install { grid-template-columns: minmax(0, 1fr); }
+      .readout, .install, .method { grid-template-columns: minmax(0, 1fr); }
       .cycle { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       header p { font-size: 16px; }
       header .unit, .chest .tag { display: none; }
@@ -278,7 +281,7 @@
         <h1>
           <img src="logo.png" alt="tsukiMOJi: moon phase emoji for any date" width="1280" height="400">
         </h1>
-        <p>月 <em>tsuki</em> “moon” + <em>moji</em>, for JavaScript, Python and Ruby.</p>
+        <p>月 <span id="today-emoji" title="Today's moon phase">🌑</span> <em>tsuki</em> “moon” + <em>moji</em>, for JavaScript, Python and Ruby.</p>
       </div>
       <div class="unit">TSK-001</div>
     </header>
@@ -327,6 +330,24 @@
       <div class="cycle" id="cycle"></div>
     </div></section>
 
+    <section class="plate"><div class="in">
+      <p class="label">Method</p>
+      <div class="method">
+        <div class="stat">
+          <p class="label">Mean synodic month</p>
+          <div class="value">29.530588853<small>days</small></div>
+        </div>
+        <div class="stat">
+          <p class="label">Reference new moon</p>
+          <div class="value">2000-01-06<small>18:14 UTC</small></div>
+        </div>
+        <div class="stat">
+          <p class="label">View</p>
+          <div class="value">Northern<small>Hemisphere</small></div>
+        </div>
+      </div>
+    </div></section>
+
     <section>
       <div class="install">
         <div class="plate"><div class="in">
@@ -354,7 +375,6 @@ Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
     </section>
 
     <footer>
-      <span>Mean synodic month (29.530588853 days) from the new moon of 2000-01-06 18:14 UTC. Northern Hemisphere view.</span>
       <span><a href="https://github.com/samlehman/tsukimoji">github.com/samlehman/tsukimoji</a> · MIT</span>
     </footer>
 
@@ -429,6 +449,7 @@ Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
     $("next").addEventListener("click", () => { current = new Date(current.getTime() + DAY_MS); render(); });
     $("now").addEventListener("click", () => { current = new Date(); render(); });
 
+    $("today-emoji").textContent = getMoonPhase(new Date()).emoji;
     render();
   </script>
 </body>
