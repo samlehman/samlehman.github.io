@@ -236,6 +236,8 @@
     button.primary:hover { background: var(--green-lo); }
     button:focus-visible { outline: 3px solid var(--green-hi); outline-offset: 2px; }
 
+    button.toggle[aria-pressed="true"] { background: var(--green); color: #fff; }
+
     /* Phase ring */
     section { margin-top: 16px; }
     .cycle { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; }
@@ -249,6 +251,54 @@
     .cycle .n { font-size: 12px; line-height: 1.15; color: var(--muted); margin-top: 4px; font-weight: 600; }
     .cycle div.on { background: var(--chest); border-bottom-color: var(--green-hi); }
     .cycle div.on .n { color: var(--green-hi); }
+
+    /* Calendar */
+    .cal-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 12px; }
+    .cal-head .label { margin: 0; }
+    .cal-nav { display: flex; align-items: center; gap: 8px; }
+    .cal-nav h2 {
+      margin: 0; min-width: 9.5em; text-align: center;
+      font-size: 22px; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .cal-nav button { padding: 6px 14px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+    .cal-grid .wd {
+      font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted); text-align: center; padding-bottom: 2px;
+    }
+    .cal-grid button {
+      clip-path: none;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      min-width: 0; min-height: 76px;
+      padding: 6px 2px;
+      background: var(--armour-2);
+      color: var(--ink);
+      border-bottom: 3px solid var(--panel-line);
+      font-size: 13px; letter-spacing: 0; text-transform: none;
+    }
+    .cal-grid button:hover { background: var(--panel-line); }
+    .cal-grid .num { align-self: flex-start; padding-left: 4px; font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--muted); font-weight: 400; }
+    .cal-grid .e { font-size: 26px; line-height: 1.1; }
+    .cal-grid .t { font-family: "JetBrains Mono", monospace; font-size: 10px; color: var(--green); font-weight: 600; }
+    .cal-grid button.event { border-bottom-color: var(--green); }
+    .cal-grid button.today .num { color: var(--green); font-weight: 600; }
+    .cal-grid button.on { background: var(--chest); color: var(--on-chest); border-bottom-color: var(--green-hi); }
+    .cal-grid button.on .num, .cal-grid button.on .t { color: var(--green-hi); }
+    .cal-events {
+      list-style: none; margin: 14px 0 0; padding: 0;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px 16px;
+    }
+    .cal-events li { display: flex; gap: 8px; align-items: baseline; }
+    .cal-events .when { font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--muted); }
+    .cal-export { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--panel-line); }
+    .cal-export .label { margin: 0 4px 0 0; }
+    .cal-export select {
+      font: inherit; font-weight: 600; font-size: 15px;
+      color: var(--ink); background: var(--armour);
+      border: 2px solid var(--edge); padding: 6px 8px;
+    }
+    .cal-export select:focus { outline: 3px solid var(--green-hi); outline-offset: 1px; }
+    .cal-export button { padding: 8px 14px; }
 
     /* Install */
     .install { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
@@ -289,6 +339,9 @@
       .cycle { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       header p { font-size: 16px; }
       header .unit, .chest .tag { display: none; }
+      .cal-grid button { min-height: 58px; }
+      .cal-grid .e { font-size: 20px; }
+      .cal-grid .t { display: none; }
     }
   </style>
 </head>
@@ -324,11 +377,11 @@
         </div>
         <div class="next">
           <div class="stat">
-            <p class="label">Next 🌕 full</p>
+            <p class="label">Next <span id="full-emoji">🌕</span> full</p>
             <div class="value" id="next-full">—</div>
           </div>
           <div class="stat">
-            <p class="label">Next 🌑 new</p>
+            <p class="label">Next <span id="new-emoji">🌑</span> new</p>
             <div class="value" id="next-new">—</div>
           </div>
         </div>
@@ -341,11 +394,35 @@
       <button type="button" id="prev" aria-label="One day earlier">−1 day</button>
       <button type="button" id="next" aria-label="One day later">+1 day</button>
       <button type="button" class="primary" id="now">Now</button>
+      <button type="button" class="toggle" id="faces" aria-pressed="false" title="Show 🌚 and 🌝 for new and full moons">🌝 Faces</button>
     </div>
 
     <section class="plate"><div class="in">
       <p class="label">Phase cycle</p>
       <div class="cycle" id="cycle"></div>
+    </div></section>
+
+    <section class="plate"><div class="in">
+      <div class="cal-head">
+        <p class="label">Moon calendar · UTC days</p>
+        <div class="cal-nav">
+          <button type="button" id="cal-prev" aria-label="Previous month">‹</button>
+          <h2 id="cal-title" aria-live="polite">—</h2>
+          <button type="button" id="cal-next" aria-label="Next month">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <ul class="cal-events" id="cal-events"></ul>
+      <div class="cal-export">
+        <label class="label" for="cal-span">Download</label>
+        <select id="cal-span">
+          <option value="month">This month</option>
+          <option value="year">This year</option>
+        </select>
+        <button type="button" data-format="csv">CSV</button>
+        <button type="button" data-format="json">JSON</button>
+        <button type="button" data-format="txt">Text</button>
+      </div>
     </div></section>
 
     <section class="plate"><div class="in">
@@ -402,15 +479,28 @@ Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
     </div>
   </div>
 
-  <script src="../moon-phase.js"></script>
-  <script>
+  <script type="module">
+    import {
+      getMoonPhase, calendar, calendarCSV, calendarJSON, calendarText,
+      PHASES, FACES, SYNODIC_MONTH_DAYS,
+    } from "https://cdn.jsdelivr.net/npm/tsukimoji@0.2.0/+esm";
+
     const DAY_MS = 86400000;
-    const SYNODIC_DAYS = 29.530588853;
     const JP = ["新月", "三日月", "上弦の月", "十三夜月", "満月", "寝待月", "下弦の月", "有明月"];
+    const MONTHS = ["January", "February", "March", "April", "May", "June", "July",
+      "August", "September", "October", "November", "December"];
 
     const $ = (id) => document.getElementById(id);
     const input = $("when");
     let current = new Date();
+    let faces = false;
+    try { faces = localStorage.getItem("tsukimoji-faces") === "1"; } catch {}
+    // The month shown in the calendar, in UTC.
+    let calYear = current.getUTCFullYear();
+    let calMonth = current.getUTCMonth();
+
+    const phaseEmoji = (index) => (faces && FACES[index]) || PHASES[index].emoji;
+    const pad = (n) => String(n).padStart(2, "0");
 
     // Build the static pieces once.
     const gauge = $("gauge");
@@ -419,44 +509,135 @@ Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
     PHASES.forEach((p) => {
       const cell = document.createElement("div");
       cell.innerHTML = '<div class="e"></div><div class="n"></div>';
-      cell.querySelector(".e").textContent = p.emoji;
       cell.querySelector(".n").textContent = p.name;
       cycle.appendChild(cell);
     });
 
     function toLocalInput(d) {
-      const pad = (n) => String(n).padStart(2, "0");
       return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) +
         "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
     }
 
     function shortDate(d) {
-      return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+      // UTC, to match the calendar's days.
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+    }
+
+    function utcTime(d) {
+      return pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes());
+    }
+
+    function renderCalendar() {
+      const days = calendar(calYear + "-" + pad(calMonth + 1), { faces });
+      const selected = current.toISOString().slice(0, 10);
+      const today = new Date().toISOString().slice(0, 10);
+      $("cal-title").textContent = MONTHS[calMonth] + " " + calYear;
+
+      const grid = $("cal-grid");
+      grid.replaceChildren();
+      ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].forEach((d) => {
+        const wd = document.createElement("div");
+        wd.className = "wd";
+        wd.textContent = d;
+        grid.appendChild(wd);
+      });
+      const offset = new Date(Date.UTC(calYear, calMonth, 1)).getUTCDay();
+      for (let i = 0; i < offset; i++) grid.appendChild(document.createElement("div"));
+
+      const events = $("cal-events");
+      events.replaceChildren();
+      for (const d of days) {
+        const cell = document.createElement("button");
+        cell.type = "button";
+        cell.innerHTML = '<span class="num"></span><span class="e"></span>';
+        cell.querySelector(".num").textContent = Number(d.date.slice(8));
+        cell.querySelector(".e").textContent = d.emoji;
+        cell.classList.toggle("on", d.date === selected);
+        cell.classList.toggle("today", d.date === today);
+        let label = d.date + ", " + d.name;
+        if (d.eventTime) {
+          cell.classList.add("event");
+          const t = document.createElement("span");
+          t.className = "t";
+          t.textContent = utcTime(d.eventTime);
+          cell.appendChild(t);
+          label += " at " + utcTime(d.eventTime) + " UTC";
+
+          const li = document.createElement("li");
+          li.innerHTML = '<span></span><span></span><span class="when"></span>';
+          li.children[0].textContent = d.emoji;
+          li.children[1].textContent = d.name;
+          li.children[2].textContent = d.date.slice(5) + " " + utcTime(d.eventTime) + " UTC";
+          events.appendChild(li);
+        }
+        cell.setAttribute("aria-label", label);
+        // Jump to the exact moment of the phase, or to noon UTC on other days.
+        cell.addEventListener("click", () => {
+          current = d.eventTime || new Date(Date.parse(d.date + "T12:00:00Z"));
+          render();
+        });
+        grid.appendChild(cell);
+      }
     }
 
     function render() {
-      const phase = getMoonPhase(current);
+      const phase = getMoonPhase(current, { faces });
       const index = PHASES.findIndex((p) => p.name === phase.name);
+      const age = phase.ageDays / SYNODIC_MONTH_DAYS;
       const pct = Math.round(phase.illumination * 100);
 
       $("emoji").textContent = phase.emoji;
       $("name").textContent = phase.name;
       $("jp").textContent = JP[index];
       $("lit").innerHTML = pct + "<small>%</small>";
-      $("age").innerHTML = (phase.age * SYNODIC_DAYS).toFixed(1) + "<small>/ 29.53 days</small>";
+      $("age").innerHTML = phase.ageDays.toFixed(1) + "<small>/ 29.53 days</small>";
+      $("today-emoji").textContent = getMoonPhase(new Date(), { faces }).emoji;
+      $("full-emoji").textContent = phaseEmoji(4);
+      $("new-emoji").textContent = phaseEmoji(0);
 
       const lit = Math.round(phase.illumination * 20);
       [...gauge.children].forEach((bar, i) => bar.classList.toggle("on", i < lit));
-      [...cycle.children].forEach((cell, i) => cell.classList.toggle("on", i === index));
+      [...cycle.children].forEach((cell, i) => {
+        cell.classList.toggle("on", i === index);
+        cell.querySelector(".e").textContent = phaseEmoji(i);
+      });
 
       // Fractions of a cycle until the next full (0.5) and new (0 / 1) moon.
-      const toFull = ((0.5 - phase.age) % 1 + 1) % 1 || 1;
-      const toNew = (1 - phase.age) % 1 || 1;
-      $("next-full").textContent = shortDate(new Date(current.getTime() + toFull * SYNODIC_DAYS * DAY_MS));
-      $("next-new").textContent = shortDate(new Date(current.getTime() + toNew * SYNODIC_DAYS * DAY_MS));
+      const toFull = ((0.5 - age) % 1 + 1) % 1 || 1;
+      const toNew = (1 - age) % 1 || 1;
+      $("next-full").textContent = shortDate(new Date(current.getTime() + toFull * SYNODIC_MONTH_DAYS * DAY_MS));
+      $("next-new").textContent = shortDate(new Date(current.getTime() + toNew * SYNODIC_MONTH_DAYS * DAY_MS));
 
       input.value = toLocalInput(current);
       document.title = phase.emoji + " tsukiMOJi · " + phase.name;
+
+      // Keep the calendar on the month of the selected date.
+      calYear = current.getUTCFullYear();
+      calMonth = current.getUTCMonth();
+      renderCalendar();
+    }
+
+    function shiftMonth(by) {
+      const d = new Date(Date.UTC(calYear, calMonth + by, 1));
+      calYear = d.getUTCFullYear();
+      calMonth = d.getUTCMonth();
+      renderCalendar();
+    }
+
+    function download(format) {
+      const span = $("cal-span").value === "year" ? String(calYear) : calYear + "-" + pad(calMonth + 1);
+      const [text, type] =
+        format === "csv" ? [calendarCSV(span, { faces }), "text/csv"] :
+        format === "json" ? [calendarJSON(span, { faces }), "application/json"] :
+        [calendarText(span, { faces }), "text/plain"];
+      const url = URL.createObjectURL(new Blob([text], { type: type + ";charset=utf-8" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "tsukimoji-" + span + "." + format;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
     input.addEventListener("change", () => {
@@ -466,8 +647,18 @@ Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
     $("prev").addEventListener("click", () => { current = new Date(current.getTime() - DAY_MS); render(); });
     $("next").addEventListener("click", () => { current = new Date(current.getTime() + DAY_MS); render(); });
     $("now").addEventListener("click", () => { current = new Date(); render(); });
+    $("faces").addEventListener("click", () => {
+      faces = !faces;
+      try { localStorage.setItem("tsukimoji-faces", faces ? "1" : "0"); } catch {}
+      $("faces").setAttribute("aria-pressed", String(faces));
+      render();
+    });
+    $("cal-prev").addEventListener("click", () => shiftMonth(-1));
+    $("cal-next").addEventListener("click", () => shiftMonth(1));
+    document.querySelectorAll(".cal-export button").forEach((b) =>
+      b.addEventListener("click", () => download(b.dataset.format)));
 
-    $("today-emoji").textContent = getMoonPhase(new Date()).emoji;
+    $("faces").setAttribute("aria-pressed", String(faces));
     render();
   </script>
 </body>
