@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
   <title>tsukiMOJi</title>
   <meta name="description" content="Moon phase emoji for any date. A tiny library for JavaScript, Python and Ruby.">
   
@@ -49,23 +50,6 @@
       --green-lo: #0b5a2b;
       --cut: 18px;
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        color-scheme: dark;
-        --bg: #0e1215;
-        --grid: rgba(47, 210, 119, 0.05);
-        --armour: #1f262b;
-        --armour-2: #182024;
-        --panel-line: #33404a;
-        --edge: #0a0d0f;
-        --chest: #12171a;
-        --chest-2: #1a2126;
-        --ink: #eef2f4;
-        --muted: #93a0a9;
-        --green: #22c55e;
-      }
-    }
-
     * { box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
     body {
@@ -327,12 +311,9 @@
       margin-top: 28px; color: var(--muted); font-size: 16px;
       display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 20px;
     }
-    /* The badge PNG has a white background: blend it away on light, invert it on dark. */
+    /* The badge PNG has a white background: blend it away. */
     .made img { display: block; width: 88px; height: auto; mix-blend-mode: multiply; }
     .made p { margin: 0; }
-    @media (prefers-color-scheme: dark) {
-      .made img { filter: invert(1); mix-blend-mode: screen; }
-    }
 
     @media (max-width: 760px) {
       .readout, .install, .method { grid-template-columns: minmax(0, 1fr); }
