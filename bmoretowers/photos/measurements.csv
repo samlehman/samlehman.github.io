@@ -1,0 +1,11 @@
+photo,candelabra_x,candelabra_y,wbff_x,wbff_y,long_side,camera_ground_m,known_lat,known_lon,known_label
+01,213,305,461,243,1024,,,,
+02,383,343,681,180,1024,,,,
+04,237,207,480,112,1024,,,,
+05,411,185,538,120,1024,,,,
+06,360,65,608,8,1024,60,39.331186,-76.643397,Woodberry light rail station
+07,243,232,289,185,500,,,,
+08,262,307,499,145,1024,,,,
+09,348,300,607,237,1024,,,,
+10a,145,100,160,42,310,83,39.340491,-76.645218,Medfield Heights Rec Center
+10c,760,115,778,57,310,83,39.340491,-76.645218,Medfield Heights Rec Center
