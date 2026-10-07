@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TV Hill Towers</title>
+<meta name="description" content="Find where a photo of Baltimore's TV Hill towers was taken from, using only the two tower tips.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"></script>
+<script src="radial.js"></script>
+<style>
+  :root {
+    --bg: #f6f5f2;
+    --panel: #ffffff;
+    --text: #1d1f23;
+    --muted: #5e636b;
+    --border: #dcdad5;
+    --accent: #c62f3c;        /* the candelabra's red */
+    --wbff: #2f6fd6;
+    --band: #d9480f;
+    --chip-bg: #efede8;
+    --viewer-bg: #2a2c30;
+    --ok: #2b8a3e;
+    --warn: #b35c00;
+    --radius: 10px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16171a;
+      --panel: #1f2125;
+      --text: #e8e6e1;
+      --muted: #a2a6ad;
+      --border: #34373d;
+      --accent: #ef5b67;
+      --wbff: #6aa1ff;
+      --band: #ff8a4c;
+      --chip-bg: #2a2d32;
+      --viewer-bg: #0f1012;
+      --ok: #5cc777;
+      --warn: #f0a33a;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16171a;
+    --panel: #1f2125;
+    --text: #e8e6e1;
+    --muted: #a2a6ad;
+    --border: #34373d;
+    --accent: #ef5b67;
+    --wbff: #6aa1ff;
+    --band: #ff8a4c;
+    --chip-bg: #2a2d32;
+    --viewer-bg: #0f1012;
+    --ok: #5cc777;
+    --warn: #f0a33a;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--wbff); }
+  header { padding: 20px 16px 8px; max-width: 1400px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--muted); max-width: 70ch; }
+
+  main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+    padding: 12px 16px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: minmax(0, 1fr); } }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    min-width: 0;
+  }
+  .panel h2 { font-size: 1rem; margin: 0 0 10px; }
+  .stack > * + * { margin-top: 12px; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button, .button, select, input {
+    font: inherit;
+    color: inherit;
+  }
+  button, .button {
+    background: var(--chip-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    line-height: 1.3;
+  }
+  button:hover, .button:hover { border-color: var(--muted); }
+  .button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  select, input[type=number] {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 8px;
+    min-width: 0;
+  }
+  input[type=file] { display: none; }
+
+  #viewer {
+    position: relative;
+    height: min(62vh, 620px);
+    min-height: 320px;
+    background: var(--viewer-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    touch-action: none;
+    outline: none;
+  }
+  #viewer:focus-visible { box-shadow: 0 0 0 3px var(--wbff); }
+  #viewer.drop { box-shadow: inset 0 0 0 3px var(--accent); }
+  #photo { display: block; width: 100%; height: 100%; cursor: crosshair; }
+  #loupe {
+    position: absolute; top: 10px; right: 10px;
+    width: 140px; height: 140px;
+    border: 2px solid #fff; border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(0,0,0,.5);
+    pointer-events: none; display: none;
+    background: #000;
+  }
+  #empty {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; color: #c9cbd0; text-align: center; padding: 16px;
+  }
+  #empty svg { opacity: .9; }
+  .zoom { position: absolute; left: 10px; bottom: 10px; display: flex; gap: 4px; }
+  .zoom button { background: rgba(0,0,0,.6); color: #fff; border-color: rgba(255,255,255,.25); padding: 4px 10px; }
+
+  .tips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tip {
+    display: flex; align-items: center; gap: 10px;
+    text-align: left; padding: 8px 10px;
+    border: 2px solid var(--border);
+  }
+  .tip .dot { width: 14px; height: 14px; border-radius: 50%; flex: none; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.3); }
+  .tip[data-tip=c] .dot { background: var(--accent); }
+  .tip[data-tip=w] .dot { background: var(--wbff); }
+  .tip.active[data-tip=c] { border-color: var(--accent); }
+  .tip.active[data-tip=w] { border-color: var(--wbff); }
+  .tip b { display: block; font-size: .92rem; }
+  .tip small { color: var(--muted); font-variant-numeric: tabular-nums; }
+  @media (max-width: 420px) { .tips { grid-template-columns: 1fr; } }
+
+  .hint { color: var(--muted); font-size: .9rem; margin: 0; }
+  .credit { color: var(--muted); font-size: .82rem; margin: 0; }
+
+  details { border-top: 1px solid var(--border); padding-top: 10px; }
+  summary { cursor: pointer; font-weight: 600; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 10px; }
+  .fields label { display: flex; flex-direction: column; gap: 4px; font-size: .88rem; font-weight: 600; }
+  .fields label span { font-weight: 400; color: var(--muted); font-size: .8rem; }
+  .fields input { width: 100%; }
+
+  .howto { display: flex; gap: 14px; align-items: flex-start; }
+  .howto svg { flex: none; }
+  .howto ol { margin: 0; padding-left: 20px; }
+  .howto li + li { margin-top: 4px; }
+
+  #map { height: min(62vh, 620px); min-height: 320px; border-radius: 8px; z-index: 0; }
+  #results h3 { font-size: .95rem; margin: 14px 0 6px; display: flex; align-items: center; gap: 8px; }
+  #results p { margin: 6px 0; }
+  .swatch { width: 22px; height: 0; border-top: 4px solid var(--band); flex: none; }
+  .swatch.dashed { border-top-style: dashed; }
+  .callout { padding: 10px 12px; border-radius: 8px; background: var(--chip-bg); }
+  .callout.ok { border-left: 4px solid var(--ok); }
+  .callout.warn { border-left: 4px solid var(--warn); }
+  table { border-collapse: collapse; width: 100%; font-size: .88rem; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 4px 8px 4px 0; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; }
+  .table-wrap { overflow-x: auto; }
+
+  footer { max-width: 1400px; margin: 0 auto; padding: 0 16px 28px; color: var(--muted); font-size: .85rem; }
+  .leaflet-tooltip { font: 12px system-ui, sans-serif; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Where was this photo taken?</h1>
+  <p>The two broadcast towers on Baltimore's TV Hill can be seen from almost anywhere in the city. Mark their two tips in a photo, and the map shows where the camera could have been.</p>
+</header>
+
+<main>
+  <section class="panel stack" aria-label="Photo">
+    <div class="toolbar">
+      <label class="button primary" for="file">Choose a photo…</label>
+      <input type="file" id="file" accept="image/*">
+      <select id="sample" aria-label="Try a sample photo">
+        <option value="">…or try a sample photo</option>
+      </select>
+    </div>
+
+    <div id="viewer" tabindex="0" aria-label="Photo viewer. Click to place the selected tip; drag to pan; scroll to zoom; arrow keys nudge the selected tip.">
+      <canvas id="photo"></canvas>
+      <canvas id="loupe" width="140" height="140"></canvas>
+      <div id="empty">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg>
+        <div>Choose a photo, or drop one here.<br><small>Your photo stays in your browser. Nothing is uploaded.</small></div>
+      </div>
+      <div class="zoom" hidden>
+        <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+        <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
+        <button type="button" data-zoom="fit">Fit</button>
+      </div>
+    </div>
+
+    <div class="tips">
+      <button type="button" class="tip active" data-tip="c"><span class="dot"></span><span><b>1. Candelabra tip</b><small id="pos-c">not placed</small></span></button>
+      <button type="button" class="tip" data-tip="w"><span class="dot"></span><span><b>2. WBFF tip</b><small id="pos-w">not placed</small></span></button>
+    </div>
+    <p class="hint" id="hint">Choose a photo to start.</p>
+    <p class="credit" id="credit" hidden></p>
+
+    <details>
+      <summary>How to mark the tips</summary>
+      <div class="howto" style="margin-top:10px">
+        <svg width="96" height="130" viewBox="0 0 96 130" aria-hidden="true">
+          <!-- candelabra: lattice body, triangular crown, three masts -->
+          <path d="M24 128 L30 52 L38 52 L44 128 Z" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <path d="M22 52 L46 52 L34 44 Z" fill="none" stroke="var(--accent)" stroke-width="2"/>
+          <path d="M22 52 V30 M46 52 V30 M34 44 V20" stroke="var(--accent)" stroke-width="2"/>
+          <circle cx="34" cy="20" r="4" fill="var(--accent)" stroke="#fff" stroke-width="1.5"/>
+          <!-- WBFF: thin guyed mast, taller -->
+          <path d="M72 128 V6" stroke="var(--muted)" stroke-width="2"/>
+          <path d="M72 30 L56 128 M72 30 L88 128 M72 70 L60 128 M72 70 L84 128" stroke="var(--muted)" stroke-width=".6"/>
+          <circle cx="72" cy="6" r="4" fill="var(--wbff)" stroke="#fff" stroke-width="1.5"/>
+        </svg>
+        <ol class="hint">
+          <li><b>Candelabra</b> (red lattice tower with three masts on a triangular crown): click the top of its tallest mast.</li>
+          <li><b>WBFF</b> (thin grey guyed mast, the taller of the two): click its very tip.</li>
+          <li>Zoom in to place them precisely: scroll or pinch, drag to pan, or drag a marker to adjust it. Arrow keys nudge the selected tip by one pixel.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details>
+      <summary>Settings</summary>
+      <div class="fields">
+        <label>Lens, 35 mm-equivalent (mm)
+          <input type="number" id="focal" min="5" max="2000" step="1" placeholder="unknown">
+          <span id="focal-note">Optional. With it, the band narrows to a point.</span>
+        </label>
+        <label>Image long side (px)
+          <input type="number" id="longside" min="10" step="1">
+          <span>Change it only if this is a crop or one panel of a collage.</span>
+        </label>
+        <label>Ground elevation at camera (m)
+          <input type="number" id="ground" step="1" value="80">
+          <span id="ground-note">Most of Baltimore is 0–150 m. It barely changes the answer.</span>
+        </label>
+        <label>Measurement error (px)
+          <input type="number" id="tol" min="0.5" step="0.5">
+          <span>How far off your clicks might be. Bigger widens the band.</span>
+        </label>
+      </div>
+    </details>
+  </section>
+
+  <section class="panel stack" aria-label="Map">
+    <div id="map"></div>
+    <div id="results">
+      <p class="hint">The map will show the possible camera positions once both tips are marked.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Tower positions from FCC antenna structure registrations 1035558 and 1044237; ground elevations from USGS. Map data © OpenStreetMap contributors.
+  Sample photos are Creative Commons images from Flickr; see <a href="photos/CREDITS.md">photos/CREDITS.md</a>.
+  How it works: <a href="CLAUDE.md">method notes</a>.
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
