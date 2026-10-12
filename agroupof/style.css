@@ -20,7 +20,11 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 Inte
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 main { max-width: 860px; margin: 0 auto; padding: 24px 16px 48px; }
-nav.top { max-width: 860px; margin: 0 auto; padding: 20px 16px 0; }
+nav.top { max-width: 860px; margin: 0 auto; padding: 20px 16px 0; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.navlinks { display: flex; gap: 18px; font-size: 14px; }
+.navlinks a { color: var(--muted); }
+.navlinks a:hover { color: var(--accent); }
+h4 a { color: inherit; text-decoration: underline; text-decoration-color: var(--line); }
 .brand { font-family: Fraunces, Georgia, serif; font-size: 1.15rem; font-weight: 600; color: var(--ink); }
 .brand em, h1 em { color: var(--accent); font-weight: 400; }
 footer { max-width: 860px; margin: 0 auto; padding: 0 16px 40px; color: var(--muted); font-size: 13px; }
