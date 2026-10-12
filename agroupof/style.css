@@ -85,8 +85,6 @@ details summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 .index li { break-inside: avoid; padding: 7px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; }
 .index a { font-family: Fraunces, Georgia, serif; font-size: 1.1rem; font-weight: 600; }
 .index span { font-size: 13px; color: var(--muted); }
-.index span a { font-family: inherit; font-size: inherit; font-weight: 400; color: var(--muted); text-decoration: underline; text-decoration-color: var(--line); }
-.index span a:hover { color: var(--accent); text-decoration-color: currentColor; }
 .variants { margin: 0 0 8px; color: var(--muted); font-style: italic; font-family: Fraunces, Georgia, serif; font-size: 1.05rem; }
 .index .aka { font-size: 12px; color: var(--muted); font-style: italic; }
 .phrase a { color: inherit; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
