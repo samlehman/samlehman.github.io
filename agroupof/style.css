@@ -101,3 +101,14 @@ details summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 .filters button.joke-filter { border-color: var(--joke); color: var(--joke); }
 .filters button.joke-filter[aria-pressed="true"] { background: var(--joke); color: var(--bg); }
 .question { font-family: Fraunces, Georgia, serif; font-size: 1.35rem; margin: 6px 0 4px; color: var(--ink); }
+.prose p, .prose li { max-width: 68ch; }
+.prose ul { padding-left: 1.2em; }
+.prose li { margin-bottom: 6px; }
+.refs { font-size: 14px; }
+.timeline { list-style: none; padding: 0; margin: 0; border-left: 2px solid var(--line); }
+.timeline li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 4px 16px; padding: 0 0 22px 18px; position: relative; }
+.timeline li::before { content: ""; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.timeline .when { font-family: Fraunces, Georgia, serif; font-weight: 600; color: var(--accent); }
+.timeline h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.timeline p { margin: 0; color: var(--muted); }
+@media (max-width: 560px) { .timeline li { grid-template-columns: 1fr; } }
