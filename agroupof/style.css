@@ -1,19 +1,22 @@
 :root {
   --bg: #f6f2ea; --card: #fffdf8; --ink: #1f1b16; --muted: #6b6257; --line: #e4dccd;
   --accent: #8a3b1e; --chip: #efe7d8; --gold: #9a6b12; --gold-bg: #f6ecd2;
+  --joke: #6b3fa0; --joke-bg: #ece3f6;
   --hi: #2f6b3a; --hi-bg: #e2efe0; --mid: #8a6512; --mid-bg: #f5ead0; --lo: #8a3b3b; --lo-bg: #f5e1dd;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #17140f; --card: #211d17; --ink: #f1ebe0; --muted: #a59a8a; --line: #3a332a;
     --accent: #e08a62; --chip: #2d2720; --gold: #e3b95a; --gold-bg: #3a2f17;
+    --joke: #c9a6f0; --joke-bg: #2e2340;
     --hi: #8fcf98; --hi-bg: #1f3322; --mid: #e3c06a; --mid-bg: #3a3018; --lo: #e89a8f; --lo-bg: #3a2220;
   }
 }
 :root[data-theme="dark"] {
   --bg: #17140f; --card: #211d17; --ink: #f1ebe0; --muted: #a59a8a; --line: #3a332a;
   --accent: #e08a62; --chip: #2d2720; --gold: #e3b95a; --gold-bg: #3a2f17;
-  --hi: #8fcf98; --hi-bg: #1f3322; --mid: #e3c06a; --mid-bg: #3a3018; --lo: #e89a8f; --lo-bg: #3a2220;
+  --joke: #c9a6f0; --joke-bg: #2e2340;
+    --hi: #8fcf98; --hi-bg: #1f3322; --mid: #e3c06a; --mid-bg: #3a3018; --lo: #e89a8f; --lo-bg: #3a2220;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 Inter, system-ui, sans-serif; }
@@ -62,6 +65,7 @@ details summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 .meta:empty { display: none; }
 .chip { font-size: 12px; padding: 2px 9px; border-radius: 999px; background: var(--chip); color: var(--muted); }
 .chip.gold { background: var(--gold-bg); color: var(--gold); }
+.chip.joke { background: var(--joke-bg); color: var(--joke); font-weight: 600; }
 .conf { font-size: 12px; padding: 1px 8px; border-radius: 999px; font-weight: 500; }
 .conf.high { background: var(--hi-bg); color: var(--hi); }
 .conf.medium { background: var(--mid-bg); color: var(--mid); }
@@ -94,3 +98,5 @@ details summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 .lead a { color: inherit; text-decoration: underline; text-decoration-color: var(--line); }
 .lead b a { color: var(--ink); }
 .lead a:hover { color: var(--accent); }
+.filters button.joke-filter { border-color: var(--joke); color: var(--joke); }
+.filters button.joke-filter[aria-pressed="true"] { background: var(--joke); color: var(--bg); }
