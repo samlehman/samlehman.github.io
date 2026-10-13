@@ -100,3 +100,4 @@ details summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 .lead a:hover { color: var(--accent); }
 .filters button.joke-filter { border-color: var(--joke); color: var(--joke); }
 .filters button.joke-filter[aria-pressed="true"] { background: var(--joke); color: var(--bg); }
+.question { font-family: Fraunces, Georgia, serif; font-size: 1.35rem; margin: 6px 0 4px; color: var(--ink); }
