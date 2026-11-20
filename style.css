@@ -126,3 +126,12 @@ h2 a { color: inherit; }
   nav.top { flex-wrap: wrap; row-gap: 6px; }
   .navlinks { gap: 12px; font-size: 13px; }
 }
+.sdef { margin: 8px 0 0; color: var(--muted); max-width: 62ch; }
+.sdef .src { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 999px; padding: 1px 7px; margin-left: 4px; white-space: nowrap; }
+.sdef .src:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+/* brand with tagline underneath; a flex column keeps the nav links on the first line's baseline */
+.brand { display: flex; flex-direction: column; }
+.brand:hover { text-decoration: none; }
+.brand .tagline { font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 400; color: var(--muted);
+  letter-spacing: .02em; margin-top: 1px; }
