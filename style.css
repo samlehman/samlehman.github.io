@@ -133,5 +133,6 @@ h2 a { color: inherit; }
 /* brand with tagline underneath; a flex column keeps the nav links on the first line's baseline */
 .brand { display: flex; flex-direction: column; }
 .brand:hover { text-decoration: none; }
-.brand .tagline { font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 400; color: var(--muted);
-  letter-spacing: .02em; margin-top: 1px; }
+.brand .tagline { font-family: Inter, system-ui, sans-serif; font-size: 10.5px; font-weight: 400; color: var(--muted);
+  letter-spacing: .04em; margin-top: 5px; }
+.hero-tagline { margin: -2px 0 16px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
