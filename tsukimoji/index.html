@@ -481,6 +481,14 @@ Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
     let calMonth = current.getUTCMonth();
 
     const phaseEmoji = (index) => (faces && FACES[index]) || PHASES[index].emoji;
+
+    // The phase for the UTC day of `d`, the same rule as the calendar: new
+    // moon, quarters and full moon only on the day they happen. Age and
+    // illumination stay exact for `d`.
+    function phaseAt(d) {
+      const day = calendar(d, { faces })[0];
+      return { ...getMoonPhase(d, { faces }), emoji: day.emoji, name: day.name };
+    }
     const pad = (n) => String(n).padStart(2, "0");
 
     // Build the static pieces once.
@@ -562,7 +570,7 @@ Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
     }
 
     function render() {
-      const phase = getMoonPhase(current, { faces });
+      const phase = phaseAt(current);
       const index = PHASES.findIndex((p) => p.name === phase.name);
       const age = phase.ageDays / SYNODIC_MONTH_DAYS;
       const pct = Math.round(phase.illumination * 100);
@@ -572,7 +580,7 @@ Tsukimoji.emoji <span class="c"># "🌔"</span></pre>
       $("jp").textContent = JP[index];
       $("lit").innerHTML = pct + "<small>%</small>";
       $("age").innerHTML = phase.ageDays.toFixed(1) + "<small>/ 29.53 days</small>";
-      $("today-emoji").textContent = getMoonPhase(new Date(), { faces }).emoji;
+      $("today-emoji").textContent = phaseAt(new Date()).emoji;
       $("full-emoji").textContent = phaseEmoji(4);
       $("new-emoji").textContent = phaseEmoji(0);
 
