@@ -134,5 +134,5 @@ h2 a { color: inherit; }
 .brand { display: flex; flex-direction: column; }
 .brand:hover { text-decoration: none; }
 .brand .tagline { font-family: Inter, system-ui, sans-serif; font-size: 10.5px; font-weight: 400; color: var(--muted);
-  letter-spacing: .04em; margin-top: 5px; }
-.hero-tagline { margin: -2px 0 16px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  letter-spacing: .04em; margin-top: 8px; }
+.hero-tagline { margin: 14px 0 18px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
